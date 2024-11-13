@@ -12,7 +12,7 @@ class TCPServer {
 
         while (true) {
             // Fill#5, Listen for a TCP connection request.
-            Socket connectionSocket = new Socket()/*Fill in the Blank*/; //Mission 2
+            Socket connectionSocket = welcomeSocket.accept()/*Fill in the Blank*/; //Mission 2
             BufferedReader inFromServer = new BufferedReader(new InputStreamReader(System.in)); 
 
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -38,17 +38,17 @@ class TCPServer {
 
             // Fill#8, Send server's name and chosen number back to the client
             String serverMessage = serverName + serverNumber/*Fill in the Blank*/;  // Mission 3
-            outToClient.writeBytes(serverMessage/*Fill in the Blank*/); // Mission 3
+            outToClient.writeBytes(serverMessage + "\n"/*Fill in the Blank*/); // Mission 3
 
             // Terminate the server if the client sends a number outside the range of 1 to 100
             if (clientNumber < 1 || clientNumber > 100) {
                 connectionSocket.close();
-                welcomeSocket.close();
                 break;
             }
 
             connectionSocket.close();
-            welcomeSocket.close();
         }
+
+        welcomeSocket.close();
     }
 }

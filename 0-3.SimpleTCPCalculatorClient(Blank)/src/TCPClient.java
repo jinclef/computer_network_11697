@@ -4,7 +4,7 @@ import java.util.Random;
 
 class TCPClient {
     public static void main(String argv[]) throws Exception {
-        String host = "localhost"; // Server address
+        String host = "192.168.48.127"; // Server address
         int port = 8888; // Server port number
 
 		// Mission 1: Open TCP Socket to connect with Server and send a message
@@ -17,13 +17,13 @@ class TCPClient {
 
         // Fill#2, Read an integer from the user to make a message to send
         System.out.print("Enter an integer between 1 and 100: ");
-        int userNumber = inFromUser.read()/*Fill in the Blank*/; // Mission 1
+        int userNumber = Integer.parseInt(inFromUser.readLine())/*Fill in the Blank*/; // Mission 1
 
         // Fill#3, Send the client name and the entered integer to the server
         String clientMessage = "Client of John Q. Smith: " + userNumber;
         /*Fill in the Blank*/;  // Mission 1
-        outToServer.writeChars(clientMessage);
-
+        outToServer.writeBytes(clientMessage + "\n");
+        
         // Mission 4: Extract the server's chosen integer from the response and Calculate the sum of the client’s and server’s numbers
         // Fill#8, Read and print the response from the server
         String serverMessage = inFromServer.readLine()/*Fill in the Blank*/;  //Mission 4
