@@ -9,7 +9,7 @@ import java.net.*;
  */
 public class UDPWebClient {
   public static void main(String[] args) {
-    String host = "localhost";
+    String host = "192.168.42.127";
     int port = 8888;
     String resource = args.length > 0 ? args[0] : "/NotExist.html"; // Take resource from args or use default
     resource = "/rsc" + resource; // Add /rsc to resource

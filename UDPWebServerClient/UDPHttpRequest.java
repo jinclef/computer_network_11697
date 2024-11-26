@@ -25,7 +25,7 @@ final class UDPHttpRequest implements Runnable {
     } catch (Exception e) {
       System.out.println("Error: " + e);
       try {
-        sendErrorResponse(500, "Internal Server Error");
+        sendErrorResponse(500, "Internal Server Error", e.getMessage());
       } catch (IOException ioException) {
         System.out.println("Failed to send 500 error response: " + ioException.getMessage());
       }
@@ -53,13 +53,13 @@ final class UDPHttpRequest implements Runnable {
 
     // if the request is not a GET method, return 501 Not Implemented
     if (!method.equals("GET")) {
-      sendErrorResponse(501, "Not Implemented");
+      sendErrorResponse(501, "Not Implemented", "Method " + method + " not Implemented");
       return;
     }
 
     // if the http version is not HTTP/1.0, return 505 HTTP Version Not Supported
-    if (!httpVersion.equals("HTTP/1.0")) {
-      sendErrorResponse(505, "HTTP Version Not Supported");
+    if (!httpVersion.equals("HTTP/1.0") && !httpVersion.equals("HTTP/1.1")) {
+      sendErrorResponse(505, "HTTP Version Not Supported", "HTTP Version " + httpVersion + " not supported");
       return;
     }
 
@@ -123,10 +123,10 @@ final class UDPHttpRequest implements Runnable {
     br.close();
   }
 
-  private void sendErrorResponse(int statusCode, String message) throws IOException {
-    String statusLine = "HTTP/1.0 " + statusCode + " " + message + CRLF;
+  private void sendErrorResponse(int statusCode, String title, String message) throws IOException {
+    String statusLine = "HTTP/1.0 " + statusCode + " " + title + CRLF;
     String contentTypeLine = "Content-Type: text/html" + CRLF;
-    String entityBody = "<HTML><HEAD><TITLE>" + message + "</TITLE></HEAD><BODY>" + message + "</BODY></HTML>";
+    String entityBody = "<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD><BODY>" + message + "</BODY></HTML>";
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     baos.write(statusLine.getBytes());
