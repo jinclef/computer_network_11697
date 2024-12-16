@@ -3,7 +3,7 @@ import java.net.*;
 
 public class ProxyServer {
   public static void main(String[] args) {
-    int proxyPort = 8888; // Proxy Server의 포트
+    int proxyPort = 8888; // Proxy Server 포트
     String webServerHost = "localhost"; // Web Server 호스트
     int webServerPort = 8080; // Web Server 포트
 
@@ -13,40 +13,49 @@ public class ProxyServer {
       while (true) {
         Socket clientSocket = serverSocket.accept();
         System.out.println("New connection from client: " + clientSocket.getInetAddress());
-        new Thread(() -> handleClientRequest(clientSocket, webServerHost, webServerPort)).start();
+        new Thread(() -> handleClient(clientSocket, webServerHost, webServerPort)).start();
       }
     } catch (IOException e) {
       System.err.println("ProxyServer Error: " + e.getMessage());
     }
   }
 
-  private static void handleClientRequest(Socket clientSocket, String webServerHost, int webServerPort) {
-    try (Socket webServerSocket = new Socket(webServerHost, webServerPort);
-        InputStream clientInput = clientSocket.getInputStream();
-        OutputStream clientOutput = clientSocket.getOutputStream();
-        InputStream webServerInput = webServerSocket.getInputStream();
-        OutputStream webServerOutput = webServerSocket.getOutputStream()) {
+  private static void handleClient(Socket clientSocket, String webServerHost, int webServerPort) {
+    try (InputStream clientInput = clientSocket.getInputStream();
+        OutputStream clientOutput = clientSocket.getOutputStream()) {
 
-      // 클라이언트 요청을 WebServer로 전달
       BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientInput));
-      PrintWriter serverWriter = new PrintWriter(webServerOutput, true);
-
-      String line;
-      while ((line = clientReader.readLine()) != null && !line.isEmpty()) {
-        serverWriter.println(line); // WebServer로 요청 전송
-        System.out.println("Client Request: " + line); // 요청 로그 출력
-      }
-      serverWriter.println(); // 빈 줄로 요청 끝 알림
-
-      // WebServer 응답을 클라이언트로 전달
-      BufferedReader serverReader = new BufferedReader(new InputStreamReader(webServerInput));
       PrintWriter clientWriter = new PrintWriter(clientOutput, true);
 
-      while ((line = serverReader.readLine()) != null) {
-        clientWriter.println(line); // 클라이언트로 응답 전송
-        System.out.println("Server Response: " + line); // 응답 로그 출력
-      }
+      while (true) { // 지속적으로 요청 처리
+        String line = clientReader.readLine();
+        if (line == null || line.isEmpty()) {
+          break; // 요청이 없으면 종료
+        }
 
+        System.out.println("Client Request: " + line);
+
+        // WebServer와 새로운 연결 설정
+        try (Socket webServerSocket = new Socket(webServerHost, webServerPort);
+            InputStream webServerInput = webServerSocket.getInputStream();
+            OutputStream webServerOutput = webServerSocket.getOutputStream()) {
+
+          PrintWriter serverWriter = new PrintWriter(webServerOutput, true);
+          BufferedReader serverReader = new BufferedReader(new InputStreamReader(webServerInput));
+
+          // 클라이언트 요청 전달
+          serverWriter.println(line);
+          serverWriter.flush();
+
+          // WebServer 응답 전달
+          String responseLine;
+          while ((responseLine = serverReader.readLine()) != null) {
+            clientWriter.println(responseLine);
+            clientWriter.flush();
+            System.out.println("Server Response: " + responseLine);
+          }
+        }
+      }
     } catch (IOException e) {
       System.err.println("Error in ProxyServer handling: " + e.getMessage());
     } finally {

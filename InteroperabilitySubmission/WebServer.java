@@ -3,7 +3,7 @@ import java.net.*;
 
 public class WebServer {
   public static void main(String[] args) {
-    int serverPort = 8080; // Web Server의 포트
+    int serverPort = 8080; // Web Server 포트
     System.out.println("Web Server is starting on port " + serverPort);
 
     try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
@@ -32,17 +32,16 @@ public class WebServer {
         String requestedFile = line.split(" ")[1];
         System.out.println("Requested file: " + requestedFile);
 
-        // 요청된 파일이 /studentID.html인 경우
         if (requestedFile.equals("/studentID.html")) {
-          File file = new File("studentID.html"); // 서버 디렉토리의 studentID.html 파일
+          File file = new File("studentID.html");
 
           if (file.exists()) {
             System.out.println("File found: " + file.getAbsolutePath());
             writer.println("HTTP/1.1 200 OK");
             writer.println("Content-Type: text/html");
+            writer.println("Connection: keep-alive"); // 지속 연결 헤더 추가
             writer.println();
 
-            // 파일 내용을 읽어서 응답
             try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
               String fileLine;
               while ((fileLine = fileReader.readLine()) != null) {
@@ -50,21 +49,20 @@ public class WebServer {
               }
             }
           } else {
-            // 파일이 없는 경우 404 응답
             System.out.println("File not found: " + file.getAbsolutePath());
             writer.println("HTTP/1.1 404 Not Found");
+            writer.println("Connection: close"); // 파일이 없으면 연결 종료
             writer.println();
             writer.println("<html><body><h1>404 Not Found</h1></body></html>");
           }
         } else {
-          // 잘못된 요청 파일 처리
           System.out.println("Invalid file request: " + requestedFile);
           writer.println("HTTP/1.1 404 Not Found");
+          writer.println("Connection: close");
           writer.println();
           writer.println("<html><body><h1>404 Not Found</h1></body></html>");
         }
       }
-
     } catch (IOException e) {
       System.err.println("Error in WebServer handling: " + e.getMessage());
     } finally {
