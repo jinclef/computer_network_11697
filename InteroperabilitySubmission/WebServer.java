@@ -30,7 +30,7 @@ public class WebServer {
       BufferedReader reader = new BufferedReader(new InputStreamReader(input));
       PrintWriter writer = new PrintWriter(output, true);
 
-      // 요청 파싱
+      // parse request
       String line = reader.readLine();
       System.out.println("Request: " + line);
 
