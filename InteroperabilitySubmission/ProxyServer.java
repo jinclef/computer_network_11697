@@ -9,9 +9,9 @@ import java.net.Socket;
 
 public class ProxyServer {
   public static void main(String[] args) {
-    int proxyPort = 8888; // Proxy Server 포트
-    String webServerHost = "localhost"; // Web Server 호스트
-    int webServerPort = 8080; // Web Server 포트
+    int proxyPort = 8888; // Proxy Server port
+    String webServerHost = "localhost"; // Web Server host
+    int webServerPort = 8080; // Web Server port
 
     System.out.println("Proxy Server is starting on port " + proxyPort);
 
@@ -33,15 +33,15 @@ public class ProxyServer {
       BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientInput));
       PrintWriter clientWriter = new PrintWriter(clientOutput, true);
 
-      while (true) { // 지속적으로 요청 처리
+      while (true) { // connection keep alive
         String line = clientReader.readLine();
         if (line == null || line.isEmpty()) {
-          break; // 요청이 없으면 종료
+          break; // connection closed
         }
 
         System.out.println("Client Request: " + line);
 
-        // WebServer와 새로운 연결 설정
+        // new connection to WebServer
         try (Socket webServerSocket = new Socket(webServerHost, webServerPort);
             InputStream webServerInput = webServerSocket.getInputStream();
             OutputStream webServerOutput = webServerSocket.getOutputStream()) {
@@ -49,11 +49,11 @@ public class ProxyServer {
           PrintWriter serverWriter = new PrintWriter(webServerOutput, true);
           BufferedReader serverReader = new BufferedReader(new InputStreamReader(webServerInput));
 
-          // 클라이언트 요청 전달
+          // pass client request to WebServer
           serverWriter.println(line);
           serverWriter.flush();
 
-          // WebServer 응답 전달
+          // pass WebServer response to client
           String responseLine;
           while ((responseLine = serverReader.readLine()) != null) {
             clientWriter.println(responseLine);

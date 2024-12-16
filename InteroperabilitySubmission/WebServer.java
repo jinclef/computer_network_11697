@@ -10,7 +10,7 @@ import java.net.Socket;
 
 public class WebServer {
   public static void main(String[] args) {
-    int serverPort = 8080; // Web Server 포트
+    int serverPort = 8080; // Web Server port
     System.out.println("Web Server running on port " + serverPort);
 
     try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
@@ -43,7 +43,7 @@ public class WebServer {
             // System.out.println("File found: " + file.getAbsolutePath());
             writer.println("HTTP/1.1 200 OK");
             writer.println("Content-Type: text/html");
-            // writer.println("Connection: keep-alive"); // 지속 연결 헤더 추가
+            // writer.println("Connection: keep-alive"); // connection keep alive
             writer.println();
 
             // try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
@@ -56,7 +56,7 @@ public class WebServer {
           } else {
             System.out.println("File not found: " + file.getAbsolutePath());
             writer.println("HTTP/1.1 404 Not Found");
-            writer.println("Connection: close"); // 파일이 없으면 연결 종료
+            writer.println("Connection: close");
             writer.println();
             writer.println("<html><body><h1>404 Not Found</h1></body></html>");
           }

@@ -8,8 +8,8 @@ import java.net.Socket;
 
 public class WebClient {
   public static void main(String[] args) {
-    String proxyHost = "localhost"; // Proxy Server의 호스트
-    int proxyPort = 8888; // Proxy Server의 포트
+    String proxyHost = "localhost"; // Proxy Server host
+    int proxyPort = 8888; // Proxy Server port
 
     try (Socket socket = new Socket(proxyHost, proxyPort);
         OutputStream output = socket.getOutputStream();
@@ -18,12 +18,12 @@ public class WebClient {
       PrintWriter writer = new PrintWriter(output, true);
       BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-      // 요청 전송
+      // send request to ProxyServer
       writer.println("GET /studentID.html HTTP/1.1");
       writer.println("Host: " + proxyHost);
       writer.println();
 
-      // 응답 출력
+      // read response from ProxyServer
       String line;
       StringBuilder response = new StringBuilder();
       while ((line = reader.readLine()) != null) {
