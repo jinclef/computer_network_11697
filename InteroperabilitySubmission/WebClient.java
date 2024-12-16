@@ -1,5 +1,10 @@
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class WebClient {
   public static void main(String[] args) {
@@ -20,9 +25,15 @@ public class WebClient {
 
       // 응답 출력
       String line;
+      StringBuilder response = new StringBuilder();
       while ((line = reader.readLine()) != null) {
-        System.out.println(line);
+        // System.out.println(line);
+        response.append(line).append("\n");
       }
+      String htmlResponse = response.toString();
+      String plainText = htmlResponse.replaceAll("<[^>]*>", "");
+      
+      System.out.println("Response:\n" + plainText);
 
     } catch (IOException e) {
       System.err.println("WebClient error: " + e.getMessage());
